@@ -1,0 +1,142 @@
+{
+  "title": "M5-05 评测详情与结果工作台 · 冒烟报告",
+  "eyebrow": "AI Eval Platform · Playwright smoke",
+  "summary": "评测详情工作台的 12 个集成场景全部通过：概览状态分区、运行中刷新、SSE 断线重连、用例筛选/搜索与深链、测试打点、单用例重试与事件追溯、指标口径降级、配置快照以及 1280×800 桌面适配。最终冒烟未发现阻塞问题，也未出现控制台运行时错误。",
+  "meta": "2026-11-10 · Web 1440×900 / 1280×800 · Chrome headless",
+  "metrics": [
+    { "value": "12", "label": "冒烟场景" },
+    { "value": "0", "label": "失败" },
+    { "value": "PENDING", "label": "后端 pytest" },
+    { "value": "67 / 67", "label": "Node 门禁" }
+  ],
+  "facts": [
+    { "label": "分支", "value": "agent/complete-m5-05-2dad5fa1ffb9" },
+    { "label": "Commit", "value": "PENDING" },
+    { "label": "评测样本", "value": "6 用例 · 2 失败/超时 · 2 可重试 · $3.20 已花费" },
+    { "label": "视口", "value": "1440×900 · 1280×800" },
+    { "label": "原型对照", "value": "prototype/index.html#/evals/eval-001" }
+  ],
+  "matrix": {
+    "columns": ["#", "场景", "结果", "说明", "证据"],
+    "rows": [
+      {
+        "id": "01",
+        "name": "概览状态分区",
+        "status": { "kind": "pass", "label": "PASS" },
+        "detail": "执行/结果/轨迹状态条、4 张指标卡、堆叠进度、预算、关键用例与实时事件同时渲染。",
+        "evidence": ["m5-05-after-overview.png"]
+      },
+      {
+        "id": "02",
+        "name": "运行中刷新不丢进展",
+        "status": { "kind": "pass", "label": "PASS" },
+        "detail": "刷新后仍显示 4 / 6 已完成、$3.20 已花费和五个标签页；快照重新拉取且不回退。",
+        "evidence": ["m5-05-after-refresh.png"]
+      },
+      {
+        "id": "03",
+        "name": "SSE 断线重连与游标回放",
+        "status": { "kind": "pass", "label": "PASS" },
+        "detail": "人为中断事件流后显示等待连接；恢复后重新显示实时连接，6 条快照事件无重复。",
+        "evidence": ["m5-05-after-sse-disconnected.png", "m5-05-after-sse-reconnected.png"]
+      },
+      {
+        "id": "04",
+        "name": "用例筛选与搜索 URL 状态",
+        "status": { "kind": "pass", "label": "PASS" },
+        "detail": "失败 + matplotlib 搜索命中 1 行；状态计数保持全量，筛选进入 URL 可刷新恢复。",
+        "evidence": ["m5-05-after-cases-filtered.png"]
+      },
+      {
+        "id": "05",
+        "name": "用例深链与测试打点",
+        "status": { "kind": "pass", "label": "PASS" },
+        "detail": "case/attempt 深链恢复抽屉；F2P/P2P 测试行、失败信息与日志对象引用可见。",
+        "evidence": ["m5-05-after-case-deeplink.png"]
+      },
+      {
+        "id": "06",
+        "name": "单用例重试创建新 attempt",
+        "status": { "kind": "pass", "label": "PASS" },
+        "detail": "真实调用重试接口后出现 attempt 2，attempt 1 保留；旧的轨迹/测试证据不被覆盖。",
+        "evidence": ["m5-05-after-retry-applied.png"]
+      },
+      {
+        "id": "07",
+        "name": "重试操作可在事件日志追溯",
+        "status": { "kind": "pass", "label": "PASS" },
+        "detail": "事件日志出现 case.retry_requested / 手动重试已排队，记录操作者与新 attempt。",
+        "evidence": ["m5-05-after-retry-event.png"]
+      },
+      {
+        "id": "08",
+        "name": "指标口径与未知类型降级",
+        "status": { "kind": "pass", "label": "PASS" },
+        "detail": "P95 显示为 7m 51s，解决率显示 3 / 6 与“已完成用例”分母；histogram 未注册时降级为原始值。",
+        "evidence": ["m5-05-after-results-verified.png"]
+      },
+      {
+        "id": "09",
+        "name": "配置快照与指标定义",
+        "status": { "kind": "pass", "label": "PASS" },
+        "detail": "数据集/版本、模型、资源池、并发、超时、重试、镜像摘要、预算与指标口径全部可见且无密文。",
+        "evidence": ["m5-05-after-config-verified.png"]
+      },
+      {
+        "id": "10",
+        "name": "取消与批量重试确认",
+        "status": { "kind": "pass", "label": "PASS" },
+        "detail": "取消展示范围/费用/数据保留；批量重试展示可重试用例与 attempt 上限，均未实际执行破坏性操作。",
+        "evidence": ["m5-05-after-cancel-confirm.png", "m5-05-after-bulk-retry-confirm.png"]
+      },
+      {
+        "id": "11",
+        "name": "1280×800 桌面适配",
+        "status": { "kind": "pass", "label": "PASS" },
+        "detail": "主操作、筛选和表格在 1280×800 下不被遮挡，上下文区自动换行。",
+        "evidence": ["m5-05-after-overview-1280.png", "m5-05-after-cases-1280.png"]
+      },
+      {
+        "id": "12",
+        "name": "改动前后与原型对照",
+        "status": { "kind": "pass", "label": "PASS" },
+        "detail": "旧版单页与新五分区工作台对比清晰；原型的分区、指标卡、堆叠进度、关键用例和事件区均被保留。",
+        "evidence": ["m5-05-before-eval-detail.png", "prototype-eval-overview.png", "prototype-eval-cases.png"]
+      }
+    ]
+  },
+  "issues": [],
+  "screenshots": [
+    { "src": "m5-05-after-overview.png", "alt": "工作台概览", "label": "01 · 概览", "caption": "状态条、指标卡、堆叠进度、关键用例与实时事件。", "variant": "wide" },
+    { "src": "m5-05-after-cases.png", "alt": "用例明细", "label": "04 · 用例明细", "caption": "状态筛选、搜索、服务端分页与轨迹/测试打点列。", "variant": "wide" },
+    { "src": "m5-05-after-case-drawer.png", "alt": "用例抽屉", "label": "05 · 用例抽屉", "caption": "attempt 历史、F2P/P2P 测试结果、失败日志引用。", "variant": "issue" },
+    { "src": "m5-05-after-results.png", "alt": "结果分析", "label": "08 · 结果分析", "caption": "指标卡展示分母、口径、快照/最终状态；未知类型降级。", "variant": "wide" },
+    { "src": "m5-05-after-config.png", "alt": "配置快照", "label": "09 · 配置快照", "caption": "冻结的数据集、模型、资源池、执行策略与指标定义。", "variant": "wide" },
+    { "src": "m5-05-after-events.png", "alt": "事件日志", "label": "07 · 事件日志", "caption": "数据库游标事件窗口、类型/对象与可展开原始 payload。", "variant": "wide" },
+    { "src": "m5-05-after-cancel-confirm.png", "alt": "取消确认", "label": "10 · 取消确认", "caption": "取消范围、费用与数据保留策略的二次确认。", "variant": "issue" },
+    { "src": "m5-05-after-retry-applied.png", "alt": "重试后", "label": "06 · 重试后", "caption": "新 attempt 创建，旧 attempt 证据保留。", "variant": "issue" },
+    { "src": "prototype-eval-overview.png", "alt": "原型概览", "label": "原型 · 概览", "caption": "实现与原型的状态分区、指标卡、进度和事件区一致。", "variant": "wide" },
+    { "src": "prototype-eval-cases.png", "alt": "原型用例", "label": "原型 · 用例", "caption": "筛选、搜索、服务端分页与行内查看的交互一致。", "variant": "wide" }
+  ],
+  "coverage": {
+    "columns": ["区域", "覆盖", "结论", "建议"],
+    "rows": [
+      { "area": "用例筛选/分页/详情", "coverage": "pytest", "conclusion": "接口测试覆盖状态/搜索/分页/计数、attempt 与测试摘要。", "recommendation": "保留此套 API 回归。" },
+      { "area": "重试状态机", "coverage": "pytest", "conclusion": "覆盖成功创建新 attempt、重复请求 409、attempt 耗尽与终态拒绝、批量重试与事件。", "recommendation": "真实 Runner 冒烟时再验证派发链路。" },
+      { "area": "SSE 游标与连接池", "coverage": "pytest + 手工并发", "conclusion": "覆盖回放/终态关闭，并新增请求 session 提前释放的回归；6 条长连接下 30 次请求均 200。", "recommendation": "生产扩容时继续观察连接池指标。" },
+      { "area": "前端构建", "coverage": "typecheck + build", "conclusion": "TypeScript strict 与 Vite 生产构建通过。", "recommendation": "后续可拆分 500 kB 以上的 vendor chunk。" },
+      { "area": "关键交互", "coverage": "Playwright smoke", "conclusion": "12 个场景全部通过，0 失败。", "recommendation": "将冒烟脚本纳入发布前检查。" }
+    ]
+  },
+  "conclusion": {
+    "kind": "pass",
+    "label": "Ready for review",
+    "summary": "M5-05 的五分区工作台、筛选/深链、重试、预算恢复、配置快照和事件日志均通过自动化 API 测试与浏览器冒烟；未发现阻塞问题。",
+    "points": [
+      "单用例重试仅在运行中且 attempt 未耗尽时开放；终态重跑由发起评测流程承担。",
+      "原型的难度/评分/Token 列当前数据模型未提供，M5-05 以执行/结果/轨迹/测试打点列满足验收。",
+      "结果页基线对比属于 M5-06，未在本 PR 实现。"
+    ]
+  },
+  "footer": "证据由 Playwright + 本机 Chrome 采集；演示数据不含真实凭据。截图未提交到代码仓，按需求放入 PR 描述。"
+}
