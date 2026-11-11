@@ -24,7 +24,7 @@
   "facts": [
     {
       "label": "Commit",
-      "value": "fb162ee (final head; UI at 4fda363)"
+      "value": "d3d3cb0 (rebased head; UI at 4fda363)"
     },
     {
       "label": "Frontend",
