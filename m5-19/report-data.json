@@ -1,0 +1,304 @@
+{
+  "title": "M5-19 资源池成本利用率与排队可视化 · 集成冒烟报告",
+  "eyebrow": "本地开发栈 · FastAPI + SQLite + Vite + Chrome headless",
+  "summary": "在本地开发栈上验证 M5-19：资源池页恢复「当前利用率」与「今日资源成本」统计卡，容量条按在线/忙碌/排队/离线/扩容中分段并配同色统计，池状态区分就绪/自动扩容中，在线 Runner 接近上限且排队 Job 超过阈值时显示排队风险。12 个浏览器冒烟场景全部通过，无控制台错误与意外 4xx/5xx。",
+  "meta": "2026-11-11 · AI Eval Platform · M5-19 · issue #147",
+  "metrics": [
+    {
+      "label": "后端测试",
+      "value": "594 passed / 1 skipped"
+    },
+    {
+      "label": "前端构建",
+      "value": "tsc + vite 通过"
+    },
+    {
+      "label": "冒烟场景",
+      "value": "12 通过 · 0 失败"
+    },
+    {
+      "label": "缺陷",
+      "value": "0"
+    }
+  ],
+  "facts": [
+    {
+      "label": "应用",
+      "value": "AI Eval Platform · 资源池页"
+    },
+    {
+      "label": "提交",
+      "value": "7a727ba（本 PR head）"
+    },
+    {
+      "label": "栈",
+      "value": "本地 FastAPI + SQLite + Vite dev server"
+    },
+    {
+      "label": "浏览器",
+      "value": "Chrome headless · 1520×940（另测 1280×900）"
+    },
+    {
+      "label": "数据",
+      "value": "2 个资源池 · 9 个在线 Runner · 1 个离线 · 2 个扩容中 · 6 个排队 Attempt"
+    },
+    {
+      "label": "计费口径",
+      "value": "CNY；实例运行时长 × 创建时 CNY/小时报价快照"
+    },
+    {
+      "label": "供给器",
+      "value": "本地演示用 Fake provisioner（不调用真实阿里云）"
+    }
+  ],
+  "matrix": {
+    "columns": [
+      "#",
+      "场景",
+      "结果",
+      "说明",
+      "证据"
+    ],
+    "rows": [
+      {
+        "id": "01",
+        "name": "登录页",
+        "status": {
+          "kind": "pass",
+          "label": "PASS"
+        },
+        "detail": "登录页标题「把 Agent 能力， 变成可解释的工程指标。」",
+        "evidence": [
+          "01-login.png"
+        ]
+      },
+      {
+        "id": "02",
+        "name": "统计卡",
+        "status": {
+          "kind": "pass",
+          "label": "PASS"
+        },
+        "detail": "在线 Runner 9 / 12 2 台正在扩容 | 最大并发 12 2 个资源池 · 单 Runner 单 Job | 当前利用率 58% 7 个 Job 执行中 | 今日资源成本 ¥22.39 竞价实例 ¥22.39",
+        "evidence": [
+          "after-01-resources.png"
+        ]
+      },
+      {
+        "id": "03",
+        "name": "资源池卡片与状态",
+        "status": {
+          "kind": "pass",
+          "label": "PASS"
+        },
+        "detail": "Linux=true, Mac=true",
+        "evidence": [
+          "after-01-resources.png"
+        ]
+      },
+      {
+        "id": "04",
+        "name": "容量分段与图例",
+        "status": {
+          "kind": "pass",
+          "label": "PASS"
+        },
+        "detail": "aria: 资源池容量构成：忙碌 4，在线 1，排队 6，离线 1，扩容中 2 · stats: 5 在线 | 4 忙碌 | 6 排队 | 1 离线 | 2 扩容中",
+        "evidence": [
+          "after-01-resources.png"
+        ]
+      },
+      {
+        "id": "05",
+        "name": "排队风险预警",
+        "status": {
+          "kind": "pass",
+          "label": "PASS"
+        },
+        "detail": "Linux 排队 6 / 阈值 5 显示预警；Mac 无预警",
+        "evidence": [
+          "after-02-queue-risk.png"
+        ]
+      },
+      {
+        "id": "06",
+        "name": "利用率与成本可复算",
+        "status": {
+          "kind": "pass",
+          "label": "PASS"
+        },
+        "detail": "利用率 58%，今日成本 ¥22.39 = Linux 池 ¥22.39",
+        "evidence": [
+          "after-01-resources.png"
+        ]
+      },
+      {
+        "id": "07",
+        "name": "详情抽屉",
+        "status": {
+          "kind": "pass",
+          "label": "PASS"
+        },
+        "detail": "详情含 Runner 明细、资源事件与池配置",
+        "evidence": [
+          "04-detail-drawer.png"
+        ]
+      },
+      {
+        "id": "08",
+        "name": "编辑入口",
+        "status": {
+          "kind": "pass",
+          "label": "PASS"
+        },
+        "detail": "编辑弹窗可打开并取消",
+        "evidence": [
+          "05-edit-modal.png"
+        ]
+      },
+      {
+        "id": "09",
+        "name": "资源连接页签",
+        "status": {
+          "kind": "pass",
+          "label": "PASS"
+        },
+        "detail": "资源连接卡片存在且状态为验证通过",
+        "evidence": [
+          "06-connections.png"
+        ]
+      },
+      {
+        "id": "10",
+        "name": "刷新与稳定性",
+        "status": {
+          "kind": "pass",
+          "label": "PASS"
+        },
+        "detail": "刷新后无页面异常",
+        "evidence": [
+          "after-01-resources.png"
+        ]
+      },
+      {
+        "id": "11",
+        "name": "1280 视口",
+        "status": {
+          "kind": "pass",
+          "label": "PASS"
+        },
+        "detail": "无横向溢出（overflow=0px）",
+        "evidence": [
+          "after-03-resources-1280.png"
+        ]
+      },
+      {
+        "id": "12",
+        "name": "网络与控制台",
+        "status": {
+          "kind": "pass",
+          "label": "PASS"
+        },
+        "detail": "auth/me 探测 2 次（预期）；其他 4xx/5xx 0 次；控制台错误 0 次",
+        "evidence": []
+      }
+    ]
+  },
+  "issues": [],
+  "screenshots": [
+    {
+      "src": "before-01-live-resources.png",
+      "alt": "改动前线上资源池页",
+      "label": "Before · 线上基线",
+      "caption": "改动前线上实现：统计卡为池上限/在线/忙碌/扩容中，利用率与成本维度缺失，排队风险弱化。",
+      "variant": "wide"
+    },
+    {
+      "src": "prototype-01-resources.png",
+      "alt": "M1-02 原型资源池页",
+      "label": "原型 · M1-02",
+      "caption": "原型：在线 Runner/最大并发/当前利用率/今日资源成本，容量点阵与就绪/自动扩容状态。",
+      "variant": "wide"
+    },
+    {
+      "src": "after-01-resources.png",
+      "alt": "改造后资源池页",
+      "label": "After · 资源池",
+      "caption": "改造后：4 张统计卡恢复利用率与今日成本；容量条与统计行同色同计数；池状态为就绪/自动扩容中。",
+      "variant": "wide"
+    },
+    {
+      "src": "after-02-queue-risk.png",
+      "alt": "排队风险卡片特写",
+      "label": "After · 排队风险",
+      "caption": "在线 5/8、排队 6 个 Job（阈值 5）时触发的排队风险预警。",
+      "variant": "issue"
+    },
+    {
+      "src": "04-detail-drawer.png",
+      "alt": "资源池详情抽屉",
+      "label": "详情抽屉",
+      "caption": "详情抽屉保留 Runner 明细、最近资源事件与池配置，并新增当前利用率与今日资源成本。",
+      "variant": "normal"
+    },
+    {
+      "src": "05-edit-modal.png",
+      "alt": "编辑资源池弹窗",
+      "label": "编辑入口",
+      "caption": "保留编辑能力；弹窗可打开并取消。",
+      "variant": "normal"
+    },
+    {
+      "src": "06-connections.png",
+      "alt": "资源连接页签",
+      "label": "资源连接",
+      "caption": "资源连接页签与验证状态未受影响。",
+      "variant": "normal"
+    },
+    {
+      "src": "after-03-resources-1280.png",
+      "alt": "1280 视口资源池页",
+      "label": "响应式 · 1280",
+      "caption": "1280×900 视口无横向溢出。",
+      "variant": "normal"
+    }
+  ],
+  "coverage": {
+    "columns": [
+      "区域",
+      "覆盖",
+      "结论",
+      "建议"
+    ],
+    "rows": [
+      {
+        "area": "利用率与今日成本聚合",
+        "coverage": "UT + 冒烟",
+        "conclusion": "日窗口、利用率、成本复算、缺失价格与排队风险均有单元测试；页面数字与池卡片一致。",
+        "recommendation": "保持真实计费口径的接口测试。"
+      },
+      {
+        "area": "容量分段与统计一致性",
+        "coverage": "浏览器冒烟",
+        "conclusion": "分段 class 与统计计数一致，aria-label 可复算，1280 视口无溢出。",
+        "recommendation": "后续新增状态时同步扩展图例与统计。"
+      },
+      {
+        "area": "真实阿里云报价",
+        "coverage": "未覆盖",
+        "conclusion": "本地冒烟使用 Fake provisioner，未调用真实云 API。",
+        "recommendation": "真实环境由 spot-smoke 工作流覆盖。"
+      }
+    ]
+  },
+  "conclusion": {
+    "kind": "pass",
+    "label": "可交付",
+    "summary": "12 个冒烟场景全部通过，后端与前端门禁通过，未发现需修复的集成问题。",
+    "points": [
+      "利用率 = 忙碌 Runner / 池上限；今日成本 = 实例运行时长 × 创建时 CNY/小时快照。",
+      "本地演示使用 Fake provisioner；真实竞价报价由线上 spot-smoke 验证。"
+    ]
+  },
+  "footer": "M5-19 · issue #147 · 证据由本地开发栈浏览器冒烟生成，截图不写入代码仓。"
+}
