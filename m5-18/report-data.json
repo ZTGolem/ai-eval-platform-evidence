@@ -1,0 +1,320 @@
+{
+  "title": "M5-18 交付流水线页面 · 浏览器冒烟报告",
+  "eyebrow": "Web smoke · M5-18",
+  "summary": "在本地真实登录、真实 FastAPI 与 Vite 前端上走通 /deployments：四张摘要卡、与原型一致的五阶段时间线、环境健康、受控回滚二次确认、非管理员权限、加载态与空态均通过。质量门禁阶段从提交的 GitHub Actions 运行读取；本地冒烟用同构 stub 返回三条通过记录，生产查询真实 API。",
+  "meta": "2026-11-11 · Chrome headless 1520×940 · 本地 SQLite + seeded deployment fixture",
+  "metrics": [
+    {
+      "value": "10 / 10",
+      "label": "冒烟检查点"
+    },
+    {
+      "value": "0",
+      "label": "最终缺陷"
+    },
+    {
+      "value": "5",
+      "label": "流水线阶段"
+    },
+    {
+      "value": "4",
+      "label": "部署历史行"
+    }
+  ],
+  "facts": [
+    {
+      "label": "Commit",
+      "value": "4fda363"
+    },
+    {
+      "label": "Frontend",
+      "value": "React + Vite dev server, 127.0.0.1:5188"
+    },
+    {
+      "label": "Backend",
+      "value": "FastAPI + SQLite, 127.0.0.1:8018"
+    },
+    {
+      "label": "Baseline",
+      "value": "线上占位页 main@9bec1dc (UI audit 2026-11-11)"
+    },
+    {
+      "label": "Data",
+      "value": "本地 seeded deployment rows; 质量门禁用本地 Actions API stub; 未触发云调用"
+    }
+  ],
+  "matrix": {
+    "columns": [
+      "#",
+      "场景",
+      "结果",
+      "断言",
+      "证据"
+    ],
+    "rows": [
+      {
+        "id": "01",
+        "name": "管理员登录与页面加载",
+        "status": {
+          "kind": "pass",
+          "label": "PASS"
+        },
+        "detail": "登录后 /deployments 返回 200，标题、四张摘要卡与当前部署卡渲染。",
+        "evidence": [
+          "after-01-deployments.png"
+        ]
+      },
+      {
+        "id": "02",
+        "name": "五阶段时间线（与原型一致）",
+        "status": {
+          "kind": "pass",
+          "label": "PASS"
+        },
+        "detail": "测试与文档门禁 → 构建镜像 → PostgreSQL 迁移 → ECS 滚动更新 → 健康检查；前两段来自 GitHub Actions，后三段来自部署脚本记录。",
+        "evidence": [
+          "after-01-deployments.png"
+        ]
+      },
+      {
+        "id": "03",
+        "name": "部署历史与 GitHub Actions 链接",
+        "status": {
+          "kind": "pass",
+          "label": "PASS"
+        },
+        "detail": "4 条记录，版本、触发者、数据库版本、耗时、状态齐全；查看运行链接到 run URL。",
+        "evidence": [
+          "after-02-full.png"
+        ]
+      },
+      {
+        "id": "04",
+        "name": "环境健康摘要",
+        "status": {
+          "kind": "pass",
+          "label": "PASS"
+        },
+        "detail": "API / PostgreSQL / Redis / 对象存储 / Worker 五行；本地未配置 Redis 与对象存储时显示“未配置”，不伪造健康。",
+        "evidence": [
+          "after-01-deployments.png"
+        ]
+      },
+      {
+        "id": "05",
+        "name": "受控回滚二次确认",
+        "status": {
+          "kind": "pass",
+          "label": "PASS"
+        },
+        "detail": "首次点击打开警示弹窗；未勾选确认时按钮禁用，勾选后启用；弹窗说明不可逆范围与已产生费用。",
+        "evidence": [
+          "after-03-rollback-confirm.png"
+        ]
+      },
+      {
+        "id": "06",
+        "name": "非管理员不可见回滚",
+        "status": {
+          "kind": "pass",
+          "label": "PASS"
+        },
+        "detail": "viewer 账号可看历史但回滚按钮数量为 0，仅显示“仅平台管理员可执行回滚”。",
+        "evidence": [
+          "after-05-viewer.png"
+        ]
+      },
+      {
+        "id": "07",
+        "name": "加载态",
+        "status": {
+          "kind": "pass",
+          "label": "PASS"
+        },
+        "detail": "延迟 deployments 响应时显示摘要卡骨架与主卡骨架，时间线未提前出现。",
+        "evidence": [
+          "after-04-loading.png"
+        ]
+      },
+      {
+        "id": "08",
+        "name": "空态",
+        "status": {
+          "kind": "pass",
+          "label": "PASS"
+        },
+        "detail": "无部署记录时显示“还没有成功部署记录”、GitHub Actions 入口与“尚无成功部署”口径，回滚按钮不出现。",
+        "evidence": [
+          "after-06-empty.png"
+        ]
+      },
+      {
+        "id": "09",
+        "name": "原型对比",
+        "status": {
+          "kind": "pass",
+          "label": "PASS"
+        },
+        "detail": "四卡、时间线、环境、回滚策略与历史表的层级和视觉与 prototype 部署页一致；差异见下方说明。",
+        "evidence": [
+          "proto-deployment.png",
+          "after-01-deployments.png"
+        ]
+      },
+      {
+        "id": "10",
+        "name": "控制台稳定性",
+        "status": {
+          "kind": "pass",
+          "label": "PASS"
+        },
+        "detail": "未见运行时异常或 AntD 警告；仅登录前 /auth/me 的预期 401 探测。质量门禁使用本地 Actions stub，生产路径由 API 测试覆盖。",
+        "evidence": []
+      }
+    ]
+  },
+  "issues": [
+    {
+      "severity": "P2",
+      "title": "本地冒烟环境缺少 Redis 与对象存储",
+      "facts": [
+        {
+          "label": "Actual",
+          "value": "健康检查显示 3 / 5，Redis 与对象存储为“未配置”。"
+        },
+        {
+          "label": "Expected",
+          "value": "生产 Compose 同时运行 Redis 与 OSS，两个组件应显示健康。"
+        },
+        {
+          "label": "Impact",
+          "value": "仅影响本地截图；接口按真实探针返回，不用 mock 掩盖。"
+        }
+      ],
+      "state": {
+        "kind": "manual",
+        "label": "环境限制 · 不影响实现"
+      }
+    },
+    {
+      "severity": "P2",
+      "title": "本地冒烟的质量门禁来自 Actions API stub",
+      "facts": [
+        {
+          "label": "Actual",
+          "value": "本地启动一个返回 Backend & Web CI / Documentation Gates / Flow Gates 通过的 HTTP stub。"
+        },
+        {
+          "label": "Expected",
+          "value": "生产环境由 GET /api/v1/deployments 使用 GITHUB_TOKEN 查询真实 Actions runs。"
+        },
+        {
+          "label": "Impact",
+          "value": "截图中门禁状态是同构 stub 数据；真实 GitHub 查询与降级为 unknown 的路径有单元测试覆盖。"
+        }
+      ],
+      "state": {
+        "kind": "manual",
+        "label": "证据限制 · 已在 PR 说明"
+      }
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "shots/before-live-deployments.png",
+      "alt": "改动前线上交付流水线占位页",
+      "label": "Before · 线上占位页",
+      "caption": "改动前 main@9bec1dc：只有“该功能将在后续里程碑接入”。",
+      "variant": "wide"
+    },
+    {
+      "src": "shots/proto-deployment.png",
+      "alt": "原型交付流水线页面",
+      "label": "Prototype · 交付流水线",
+      "caption": "M1-02 prototype 的目标布局。",
+      "variant": "wide"
+    },
+    {
+      "src": "shots/after-01-deployments.png",
+      "alt": "改后交付流水线页面",
+      "label": "After · 流水线总览",
+      "caption": "四张摘要卡、当前部署五阶段时间线、环境与回滚策略。",
+      "variant": "wide"
+    },
+    {
+      "src": "shots/after-02-full.png",
+      "alt": "改后完整页面与部署历史",
+      "label": "After · 部署历史",
+      "caption": "完整页面：历史记录含版本、触发者、迁移版本、耗时、状态与运行链接。",
+      "variant": "wide"
+    },
+    {
+      "src": "shots/after-03-rollback-confirm.png",
+      "alt": "回滚二次确认弹窗",
+      "label": "After · 回滚确认",
+      "caption": "勾选影响确认后“确认回滚”才可用。",
+      "variant": "issue"
+    },
+    {
+      "src": "shots/after-05-viewer.png",
+      "alt": "viewer 视角无回滚入口",
+      "label": "After · 非管理员",
+      "caption": "viewer 只读，回滚按钮不渲染。",
+      "variant": "wide"
+    },
+    {
+      "src": "shots/after-04-loading.png",
+      "alt": "加载骨架",
+      "label": "After · 加载态",
+      "caption": "deployments 响应延迟时的骨架。",
+      "variant": "wide"
+    },
+    {
+      "src": "shots/after-06-empty.png",
+      "alt": "无部署记录空态",
+      "label": "After · 空态",
+      "caption": "空记录时的空态与 GitHub Actions 入口。",
+      "variant": "wide"
+    }
+  ],
+  "coverage": {
+    "columns": [
+      "区域",
+      "覆盖",
+      "结论",
+      "建议"
+    ],
+    "rows": [
+      {
+        "area": "部署读取与回滚 API",
+        "coverage": "Unit/API",
+        "conclusion": "新增 7 个测试覆盖排序、阶段、权限、确认、目标漂移、迁移不兼容、派发失败、审计与 live CI gate 注入。",
+        "recommendation": "真实 GitHub repository_dispatch 与 ECS 回滚需在合并后按发布演练验证。"
+      },
+      {
+        "area": "部署脚本阶段记录",
+        "coverage": "Unit",
+        "conclusion": "record_deployment.parse_stages 有单元测试；shell 分支未在 CI 中执行。",
+        "recommendation": "合并后首次部署核对 stages 与 Alembic revision。"
+      },
+      {
+        "area": "Web 页面",
+        "coverage": "Browser smoke",
+        "conclusion": "10 项检查点通过；本地 fixture 不触发真实云调用。",
+        "recommendation": "生产回滚演练时复核二次确认与审计记录。"
+      }
+    ]
+  },
+  "conclusion": {
+    "kind": "pass",
+    "label": "冒烟通过，可交付检视",
+    "summary": "页面主路径、回滚确认、权限、加载与空态通过；剩余风险集中在真实 GitHub Actions 回滚派发与生产 Redis/OSS 探针，需合并后演练。",
+    "points": [
+      "时间线已对齐原型五阶段；质量门禁是真实 Actions 查询，生产 token/网络不可用时降级为 unknown。",
+      "原型中的“手动部署”未实现：本 issue 只要求回滚与外链，未新增手动部署入口。",
+      "原型按语义版本展示；真实部署记录只有 commit SHA，因此版本列使用 SHA 并在历史中合并了重复的提交列。",
+      "测试与文档门禁是独立 CI 工作流，不在 deploy.yml 内；时间线第一段使用真实的镜像构建阶段，避免伪造“测试通过”。"
+    ]
+  },
+  "footer": "Generated from browser smoke evidence · local fixture data · no secrets captured."
+}
