@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>M5-18 交付流水线页面 · 浏览器冒烟报告</title>
+  <style>
+    :root{
+      color-scheme:light;
+      --bg:#f4f7fb;--card:#fff;--ink:#16202f;--ink2:#55637a;--ink3:#7b869b;
+      --line:#dde4ee;--accent:#2563eb;--accent-wash:#e8efff;--good:#157347;
+      --good-wash:#e7f6ee;--warn:#b45309;--warn-wash:#fff2dd;--bad:#c9282e;
+      --bad-wash:#ffeded;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:radial-gradient(circle at 8% 0,#dbe9ff 0,transparent 32rem),radial-gradient(circle at 92% 4%,#e7f1ff 0,transparent 28rem),var(--bg);color:var(--ink);font:14px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Noto Sans CJK SC",sans-serif}
+    main{max-width:1220px;margin:auto;padding:36px 28px 72px}
+    .hero{padding:30px 34px;border:1px solid #dbe3ee;border-radius:24px;background:rgba(255,255,255,.92);box-shadow:0 18px 44px #17202f12}
+    .eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
+    h1{margin:10px 0 8px;font-size:clamp(28px,4vw,44px);letter-spacing:-.04em}
+    .summary{margin:0;max-width:850px;color:var(--ink2);font-size:15px}
+    .meta{display:block;margin-top:8px;color:var(--ink3);font-size:12px}
+    .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-top:26px}
+    .metric{padding:16px 18px;border:1px solid var(--line);border-radius:16px;background:#fafbfd}
+    .metric b{display:block;font-size:30px;letter-spacing:-.04em}
+    .metric span{display:block;margin-top:2px;color:var(--ink3);font-size:12px}
+    section{margin-top:28px}
+    .head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin:0 4px 14px}
+    h2{margin:0;font-size:21px;letter-spacing:-.03em}
+    .head small{color:var(--ink3);white-space:nowrap}
+    .card{padding:22px;border:1px solid var(--line);border-radius:20px;background:var(--card);box-shadow:0 5px 22px #17202f08}
+    .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:0}
+    .fact{padding:13px 16px;border:1px solid #eceff5;border-radius:12px;background:#fafbfd}
+    .fact dt{color:var(--ink3);font-size:11px;font-weight:700}
+    .fact dd{margin:3px 0 0;overflow-wrap:anywhere}
+    code{font-family:var(--mono);font-size:.9em;color:#29456d;overflow-wrap:anywhere}
+    .status{display:inline-flex;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:800;white-space:nowrap;background:#eef1f6;color:var(--ink2)}
+    .status.pass,.status.fixed{background:var(--good-wash);color:var(--good)}
+    .status.warn,.status.manual{background:var(--warn-wash);color:var(--warn)}
+    .status.fail{background:var(--bad-wash);color:var(--bad)}
+    .tableWrap{overflow:auto;border:1px solid var(--line);border-radius:18px;background:var(--card);box-shadow:0 5px 22px #17202f08}
+    table{width:100%;min-width:920px;border-collapse:collapse}
+    th,td{padding:12px 15px;border-bottom:1px solid #edf0f5;text-align:left;vertical-align:top}
+    th{position:sticky;top:0;background:#fafbfe;color:var(--ink2);font-size:12px}
+    tr:last-child td{border-bottom:0}
+    tr:hover{background:#fcfdff}
+    .num{color:var(--ink3);font-family:var(--mono);font-size:12px}
+    .evidence{color:var(--ink3);font-size:12px}
+    .issues{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px}
+    .issueCard{padding:18px 21px;border:1px solid #ffcece;border-left:5px solid var(--bad);border-radius:16px;background:#fffbfb}
+    .issueCard h3{margin:0;color:#b91c1c;font-size:16px}
+    .issueCard p{margin:8px 0;color:var(--ink2)}
+    .issueCard dt{color:var(--ink3);font-size:11px;font-weight:700}
+    .issueCard dd{margin:2px 0 0;color:var(--ink2)}
+    .tag{float:right;padding:3px 8px;border-radius:999px;background:#fee4e4;color:#9a1b21;font-size:11px;font-weight:800}
+    .fixed{display:inline-flex;gap:5px;align-items:center;margin-top:11px;padding:6px 10px;border-radius:999px;background:var(--good-wash);color:var(--good);font-size:12px;font-weight:800}
+    .shots{display:grid;grid-template-columns:repeat(auto-fit,minmax(430px,1fr));gap:16px}
+    figure{margin:0;overflow:hidden;border:1px solid var(--line);border-radius:18px;background:#fff;box-shadow:0 6px 22px #17202f08}
+    figure.wide{grid-column:1/-1}
+    img{display:block;width:100%;max-height:500px;object-fit:contain;background:#eef2f7}
+    figcaption{display:flex;gap:9px;align-items:flex-start;padding:11px 14px;border-top:1px solid #edf0f5;background:#fafbfd;color:var(--ink2);font-size:12.5px}
+    figcaption b{flex:none;color:var(--ink)}
+    .issue-shot{border-color:#ffcece}
+    .conclusion{border:1px solid #c8e5d2;border-radius:20px;background:linear-gradient(135deg,#f2fbf6,white 54%)}
+    .conclusion.warn{border-color:#f1d9a4;background:linear-gradient(135deg,#fff8e8,white 54%)}
+    .conclusion.fail{border-color:#ffc9c9;background:linear-gradient(135deg,#fff5f5,white 54%)}
+    .conclusion ul{margin:12px 0 0;padding-left:20px;color:#344155}
+    .conclusion li+li{margin-top:7px}
+    .empty{padding:20px;text-align:center;color:var(--ink3);background:#fafbfd;border:1px dashed var(--line);border-radius:12px}
+    .foot{margin-top:24px;color:var(--ink3);font-size:12px;text-align:center}
+    @media(max-width:860px){main{padding:22px 14px 52px}.hero{padding:23px}.shots{grid-template-columns:1fr}.head{align-items:flex-start;flex-direction:column;gap:4px}}
+    @media print{body{background:white}main{max-width:none;padding:0}.card,.issueCard,figure,.tableWrap{box-shadow:none;break-inside:avoid}img{max-height:420px}}
+  </style>
+</head>
+<body>
+<main>
+  <header class="hero">
+    <p class="eyebrow">Web smoke · M5-18</p>
+    <h1>M5-18 交付流水线页面 · 浏览器冒烟报告</h1>
+    <p class="summary">在本地真实登录、真实 FastAPI 与 Vite 前端上走通 /deployments：四张摘要卡、五阶段时间线、环境健康、受控回滚二次确认、非管理员权限、加载态与空态均通过。截图与原型、线上占位页使用同一 1520×940 视口与浅色主题。</p>
+    <span class="meta">2026-11-11 · Chrome headless 1520×940 · 本地 SQLite + seeded deployment fixture</span>
+    <div class="metrics"><div class="metric"><b>10 / 10</b><span>冒烟检查点</span></div><div class="metric"><b>0</b><span>最终缺陷</span></div><div class="metric"><b>5</b><span>流水线阶段</span></div><div class="metric"><b>4</b><span>部署历史行</span></div></div>
+  </header>
+
+  <section>
+    <div class="head"><h2>Environment and Artifact</h2><small>2026-11-11 · Chrome headless 1520×940 · 本地 SQLite + seeded deployment fixture</small></div>
+    <article class="card"><dl class="facts"><div class="fact"><dt>Commit</dt><dd>8dc58f1</dd></div><div class="fact"><dt>Frontend</dt><dd>React + Vite dev server, 127.0.0.1:5188</dd></div><div class="fact"><dt>Backend</dt><dd>FastAPI + SQLite, 127.0.0.1:8018</dd></div><div class="fact"><dt>Baseline</dt><dd>线上占位页 main@9bec1dc (UI audit 2026-11-11)</dd></div><div class="fact"><dt>Data</dt><dd>本地 seeded deployment rows; retries and cloud calls not triggered</dd></div></dl></article>
+  </section>
+
+  <section>
+    <div class="head"><h2>Scenario Matrix</h2><small>10 pass</small></div>
+    <div class="tableWrap"><table><table><thead><tr><th>#</th><th>场景</th><th>结果</th><th>断言</th><th>证据</th></tr></thead><tbody><tr><td class="num">01</td><td>管理员登录与页面加载</td><td><span class="status pass">PASS</span></td><td>登录后 /deployments 返回 200，标题、四张摘要卡与当前部署卡渲染。</td><td class="evidence">after-01-deployments.png</td></tr><tr><td class="num">02</td><td>五阶段时间线</td><td><span class="status pass">PASS</span></td><td>构建 → PostgreSQL 迁移 → ECS 滚动更新 → 健康检查 → 写入记录；状态与耗时来自部署记录。</td><td class="evidence">after-01-deployments.png</td></tr><tr><td class="num">03</td><td>部署历史与 GitHub Actions 链接</td><td><span class="status pass">PASS</span></td><td>4 条记录，版本、触发者、数据库版本、耗时、状态齐全；查看运行链接到 run URL。</td><td class="evidence">after-02-full.png</td></tr><tr><td class="num">04</td><td>环境健康摘要</td><td><span class="status pass">PASS</span></td><td>API / PostgreSQL / Redis / 对象存储 / Worker 五行；本地未配置 Redis 与对象存储时显示“未配置”，不伪造健康。</td><td class="evidence">after-01-deployments.png</td></tr><tr><td class="num">05</td><td>受控回滚二次确认</td><td><span class="status pass">PASS</span></td><td>首次点击打开警示弹窗；未勾选确认时按钮禁用，勾选后启用；弹窗说明不可逆范围与已产生费用。</td><td class="evidence">after-03-rollback-confirm.png</td></tr><tr><td class="num">06</td><td>非管理员不可见回滚</td><td><span class="status pass">PASS</span></td><td>viewer 账号可看历史但回滚按钮数量为 0，仅显示“仅平台管理员可执行回滚”。</td><td class="evidence">after-05-viewer.png</td></tr><tr><td class="num">07</td><td>加载态</td><td><span class="status pass">PASS</span></td><td>延迟 deployments 响应时显示摘要卡骨架与主卡骨架，时间线未提前出现。</td><td class="evidence">after-04-loading.png</td></tr><tr><td class="num">08</td><td>空态</td><td><span class="status pass">PASS</span></td><td>无部署记录时显示“还没有成功部署记录”、GitHub Actions 入口与“尚无成功部署”口径，回滚按钮不出现。</td><td class="evidence">after-06-empty.png</td></tr><tr><td class="num">09</td><td>原型对比</td><td><span class="status pass">PASS</span></td><td>四卡、时间线、环境、回滚策略与历史表的层级和视觉与 prototype 部署页一致；差异见下方说明。</td><td class="evidence">proto-deployment.png<br>after-01-deployments.png</td></tr><tr><td class="num">10</td><td>控制台稳定性</td><td><span class="status pass">PASS</span></td><td>未见运行时异常或 AntD 警告；仅登录前 /auth/me 的预期 401 探测。</td><td class="evidence">—</td></tr></tbody></table></table></div>
+  </section>
+
+  <section>
+    <div class="head"><h2>Issues and Observations</h2><small>P2 本地冒烟环境缺少 Redis 与对象存储</small></div>
+    <div class="issues"><article class="issueCard"><span class="tag">P2</span><h3>本地冒烟环境缺少 Redis 与对象存储</h3><dl><div><dt>Actual</dt><dd>健康检查显示 3 / 5，Redis 与对象存储为“未配置”。</dd></div><div><dt>Expected</dt><dd>生产 Compose 同时运行 Redis 与 OSS，两个组件应显示健康。</dd></div><div><dt>Impact</dt><dd>仅影响本地截图；接口按真实探针返回，不用 mock 掩盖。</dd></div></dl><div class="fixed">环境限制 · 不影响实现</div></article></div>
+  </section>
+
+  <section>
+    <div class="head"><h2>Evidence</h2><small>8 screenshots</small></div>
+    <div class="shots"><figure class="wide"><img loading="lazy" src="shots/before-live-deployments.png" alt="改动前线上交付流水线占位页"><figcaption><b>Before · 线上占位页</b><span>改动前 main@9bec1dc：只有“该功能将在后续里程碑接入”。</span></figcaption></figure><figure class="wide"><img loading="lazy" src="shots/proto-deployment.png" alt="原型交付流水线页面"><figcaption><b>Prototype · 交付流水线</b><span>M1-02 prototype 的目标布局。</span></figcaption></figure><figure class="wide"><img loading="lazy" src="shots/after-01-deployments.png" alt="改后交付流水线页面"><figcaption><b>After · 流水线总览</b><span>四张摘要卡、当前部署五阶段时间线、环境与回滚策略。</span></figcaption></figure><figure class="wide"><img loading="lazy" src="shots/after-02-full.png" alt="改后完整页面与部署历史"><figcaption><b>After · 部署历史</b><span>完整页面：历史记录含版本、触发者、迁移版本、耗时、状态与运行链接。</span></figcaption></figure><figure class="issue"><img loading="lazy" src="shots/after-03-rollback-confirm.png" alt="回滚二次确认弹窗"><figcaption><b>After · 回滚确认</b><span>勾选影响确认后“确认回滚”才可用。</span></figcaption></figure><figure class="wide"><img loading="lazy" src="shots/after-05-viewer.png" alt="viewer 视角无回滚入口"><figcaption><b>After · 非管理员</b><span>viewer 只读，回滚按钮不渲染。</span></figcaption></figure><figure class="wide"><img loading="lazy" src="shots/after-04-loading.png" alt="加载骨架"><figcaption><b>After · 加载态</b><span>deployments 响应延迟时的骨架。</span></figcaption></figure><figure class="wide"><img loading="lazy" src="shots/after-06-empty.png" alt="无部署记录空态"><figcaption><b>After · 空态</b><span>空记录时的空态与 GitHub Actions 入口。</span></figcaption></figure></div>
+  </section>
+
+  <section>
+    <div class="head"><h2>Automated Coverage Assessment</h2><small>3 areas reviewed</small></div>
+    <div class="tableWrap"><table><table><thead><tr><th>区域</th><th>覆盖</th><th>结论</th><th>建议</th></tr></thead><tbody><tr><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td></tr></tbody></table></table></div>
+  </section>
+
+  <section>
+    <div class="head"><h2>Conclusion</h2><small>冒烟通过，可交付检视</small></div>
+    <article class="card conclusion pass"><p><strong>页面主路径、回滚确认、权限、加载与空态通过；剩余风险集中在真实 GitHub Actions 回滚派发与生产 Redis/OSS 探针，需合并后演练。</strong></p><ul><li>原型中的“手动部署”未实现：本 issue 只要求回滚与外链，未新增手动部署入口。</li><li>原型按语义版本展示；真实部署记录只有 commit SHA，因此版本列使用 SHA 并在历史中合并了重复的提交列。</li><li>测试与文档门禁是独立 CI 工作流，不在 deploy.yml 内；时间线第一段使用真实的镜像构建阶段，避免伪造“测试通过”。</li></ul></article>
+  </section>
+
+  <p class="foot">Generated from browser smoke evidence · local fixture data · no secrets captured.</p>
+</main>
+</body>
+</html>
